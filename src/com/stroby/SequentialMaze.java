@@ -192,7 +192,7 @@ final public class SequentialMaze extends JPanel {
           0 <= p.getY() && p.getY() < height;
   }
 
-  private boolean hasPassage(Point from, Point to) {
+  public boolean hasPassage(Point from, Point to) {
     if (!contains(from) ||  !contains(to)) {
       return false;
     }

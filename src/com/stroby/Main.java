@@ -16,8 +16,30 @@ public class Main {
         long vergangeneZeit = stop - start;// Zeit berechnen
 
         SequentialMaze maze = new SequentialMaze(width, height, new Point(width-1, 0), new Point(0, height-1));
+
+        Node[][] nodes = convertMaze(maze);
+
+
         Point[] solution = maze.solve();
         showSolution(maze, solution);
+    }
+
+    private static Node[][] convertMaze(SequentialMaze maze){
+
+        Node[][] nodes = new Node[width][height];
+
+        for (int i = 0; i < width; i++){
+            for (int j = 0; j < height; j++){
+                nodes[i][j] = new Node(i, j, maze);
+            }
+        }
+
+        for (int i = 0; i < width; i++){
+            for (int j = 0; j < height; j++){
+                nodes[i][j].updateNeigbors(nodes);
+            }
+        }
+        return nodes;
     }
 
     private static void showSolution(SequentialMaze maze, Point[] solution){
@@ -25,7 +47,6 @@ public class Main {
 
         JFrame frame = new JFrame("Sequential maze solver");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // TODO: Fenster erscheint initial immer etwas kleiner als die
         // angegebene Frame-Größe, deshalb width+5 und height+10:
         frame.setSize((width+5)*10, (height+10)*10);
         frame.getContentPane().add(maze, BorderLayout.CENTER);
