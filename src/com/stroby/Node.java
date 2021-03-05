@@ -1,22 +1,19 @@
 package com.stroby;
 
 public class Node {
-    private int x;
-    private int y;
+    private Point point;
     private int[] paths;
     private Node[] neigbor;
 
     public Node(int x, int y, SequentialMaze maze){
-        this.x = x;
-        this.y = y;
+        this.point = new Point(x, y);
 
-        Point current = new Point(x, y);
         int index = 0;
         int[] paths = new int[4];
         Direction[] dirs = Direction.values();
         for (int i = 0; i < dirs.length; i++){
-            Point neighbor = current.getNeighbor(dirs[i]);
-            if (maze.hasPassage(current, neighbor)){
+            Point neighbor = point.getNeighbor(dirs[i]);
+            if (maze.hasPassage(point, neighbor)){
                 paths[index] = i;
                 index++;
             }
@@ -32,20 +29,19 @@ public class Node {
         neigbor = new Node[paths.length];
         Direction[] dirs = Direction.values();
         for (int i = 0; i < paths.length; i++){
-            neigbor[i] = nodes[x + dirs[i].dx][y + dirs[i].dy];
+            neigbor[i] = nodes[point.x + dirs[paths[i]].dx][point.y + dirs[paths[i]].dy];
         }
-        return;
     }
 
-    public boolean Equals(Node node){
-        return node.x == x && node.y == y;
+    public boolean equals(Node node){
+        return point.equals(node.point);
     }
 
-    public int getX() {
-        return x;
+    public Point getPoint() {
+        return point;
     }
 
-    public int getY() {
-        return y;
+    public Node[] getNeigbors() {
+        return neigbor;
     }
 }

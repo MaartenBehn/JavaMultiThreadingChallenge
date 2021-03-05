@@ -111,8 +111,8 @@ enum Direction {
 @SuppressWarnings("serial")
 final public class SequentialMaze extends JPanel {
 
-  private static final int  CELL_PX = 10;  // width and length of the maze cells  in pixels
-  private static final int  HALF_WALL_PX = 2;  // thickness/2 of the maze walls  in pixels
+  public static final int  CELL_PX = 4;  // width and length of the maze cells  in pixels
+  private static final int  HALF_WALL_PX = 1;  // thickness/2 of the maze walls  in pixels
   // mazes with more pixels than this (in one or both directions) will not be graphically displayed:
   private static final int MAX_PX_TO_DISPLAY = 1000;
 
@@ -216,7 +216,7 @@ final public class SequentialMaze extends JPanel {
     visited[p.getX()][p.getY()] = true;
   }
 
-  private boolean checkSolution(Point[] solution) {
+  public boolean checkSolution(Point[] solution) {
     Point from = solution[0];
     if (!from.equals(start)) {
       System.out.println("checkSolution fails because the first cell is" + from + ", but not  " + start);
