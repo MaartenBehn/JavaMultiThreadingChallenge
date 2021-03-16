@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public class Main {
 
-    private static final int width = 1000;
-    private static final int height = 1000;
+    private static final int width = 100;
+    private static final int height = 100;
     private static SequentialMaze maze;
 
     public static void main(String[] args) {
@@ -30,6 +30,15 @@ public class Main {
         TimeCheck();
         Point[] mySolution = convertSolution(path);
         System.out.println(maze.checkSolution(mySolution));
+
+        if (width * height <= 100 * 100){
+            System.out.println("Single Thread Recursiv");
+            StartTimer();
+            Node[] path2 = solveMazeRecursiv(start, new Node[width * height], 0);
+            TimeCheck();
+            Point[] mySolution2 = convertSolution(path2);
+            System.out.println(maze.checkSolution(mySolution2));
+        }
 
         showSolution(maze, mySolution);
 
