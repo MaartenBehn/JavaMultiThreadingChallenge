@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 public class Main {
 
-    private static final int width = 100;
-    private static final int height = 100;
-    private static SequentialMaze maze;
+    public static final int width = 1000;
+    public static final int height = 1000;
+    public static SequentialMaze maze;
 
     public static void main(String[] args) {
 
@@ -20,77 +20,18 @@ public class Main {
         TimeCheck();
         System.out.println(maze.checkSolution(solution));
 
-        Node[][] nodes = convertMaze(maze);
-        start = nodes[width-1][0];
-        end = nodes[0][height-1];
+        NodeSolver.run();
 
-        System.out.println("Single Thread");
-        StartTimer();
-        Node[] path = solveMazeIntera();
-        TimeCheck();
-        Point[] mySolution = convertSolution(path);
-        System.out.println(maze.checkSolution(mySolution));
-
-        if (width * height <= 100 * 100){
-            System.out.println("Single Thread Recursiv");
-            StartTimer();
-            Node[] path2 = solveMazeRecursiv(start, new Node[width * height], 0);
-            TimeCheck();
-            Point[] mySolution2 = convertSolution(path2);
-            System.out.println(maze.checkSolution(mySolution2));
-        }
-
-        showSolution(maze, mySolution);
-
-        switch (3){
-            case 3:
-                System.out.println("Multi 3 Thread");
-                StartTimer();
-                solveMazeMulti(3, new int[][]{
-                        new int[]{0},
-                        new int[]{1},
-                        new int[]{2},
-                });
-                break;
-            case 5:
-                System.out.println("Multi 5 Thread");
-                StartTimer();
-                solveMazeMulti(5, new int[][]{
-                        new int[]{0},
-                        new int[]{1},
-                        new int[]{2},
-                        new int[]{0,1},
-                        new int[]{1,0},
-                });
-                break;
-        }
+        showSolution(maze, solution);
     }
 
     private static long startTimer;
-    private static void StartTimer(){
+    public static void StartTimer(){
         startTimer = System.currentTimeMillis();
     }
-    private static void TimeCheck(){
+    public static void TimeCheck(){
         long differnce = System.currentTimeMillis() - startTimer;
         System.out.println(differnce + " ms");
-    }
-
-    private static Node[][] convertMaze(SequentialMaze maze){
-
-        Node[][] nodes = new Node[width][height];
-
-        for (int i = 0; i < width; i++){
-            for (int j = 0; j < height; j++){
-                nodes[i][j] = new Node(i, j, maze);
-            }
-        }
-
-        for (int i = 0; i < width; i++){
-            for (int j = 0; j < height; j++){
-                nodes[i][j].updateNeigbors(nodes);
-            }
-        }
-        return nodes;
     }
 
     private static void showSolution(SequentialMaze maze, Point[] solution){
@@ -103,109 +44,5 @@ public class Main {
         frame.getContentPane().add(maze, BorderLayout.CENTER);
         frame.setVisible(true); // will draw the maze (without solution)
         maze.displaySolution(solution, frame);
-    }
-
-    private static Node start;
-    private static Node end;
-    private static Node[] solveMazeRecursiv(Node current, Node[] path, int pathIndex){
-        path[pathIndex] = current;
-        if (current.equals(end)){
-            return path;
-        }
-
-        Node[] neigbors = current.getNeigbors();
-        for (int i = 0; i < neigbors.length; i++){
-            if (pathIndex > 1 && path[pathIndex - 1].equals(neigbors[i])) {continue;}
-            Node[] solution = solveMazeRecursiv(neigbors[i], path, pathIndex + 1);
-            if (solution != null){
-                return solution;
-            }
-        }
-        path[pathIndex] = null;
-        return null;
-    }
-    private static Node[] solveMazeIntera(){
-        Node[] path = new Node[width * height];
-        path[0] = start;
-        int[] stack = new int[width * height];
-
-        int index = 0;
-        while (!path[index].equals(end)){
-
-            Node[] neigbors = path[index].getNeigbors();
-            if (stack[index] >= neigbors.length){
-                stack[index] = 0;
-                path[index] = null;
-                index--;
-
-            }else {
-                if (!(index != 0 && neigbors[stack[index]].equals(path[index-1]))){
-                    path[index + 1] = neigbors[stack[index]];
-                    stack[index]++;
-                    index++;
-                }else {
-                    stack[index]++;
-                }
-            }
-
-        }
-
-        return path;
-    }
-    public static Node[] solveMazeIteraWithRule(int[] rule){
-        Node[] path = new Node[width * height];
-        path[0] = start;
-        int[] stack = new int[width * height];
-
-        int index = 0;
-        while (!path[index].equals(end)){
-            Node[] neigbors = path[index].getNeigbors();
-
-            int neigborLenght = neigbors.length;
-            int ruleValue = rule[index % rule.length];
-            int stackValue = stack[index] + ruleValue;
-
-            if(stackValue >= neigborLenght + ruleValue){
-                stack[index] = 0;
-                path[index] = null;
-                index--;
-            } else  {
-                while (stackValue >= neigborLenght){
-                    stackValue -= neigborLenght;
-                }
-                stack[index]++;
-
-                if (!(index != 0 && neigbors[stackValue].equals(path[index - 1]))){
-                    path[index + 1] = neigbors[stackValue];
-                    index++;
-                }
-            }
-        }
-
-        return path;
-    }
-    private static void solveMazeMulti(int threads, int[][] rules){
-        for (int i = 0; i < threads; i++){
-            MultiSolver solver = new MultiSolver(rules[i]);
-            solver.start();
-        }
-    }
-    public static void finisched(Node[] path){
-        TimeCheck();
-        Point[] mySolution = convertSolution(path);
-        maze.checkSolution(mySolution);
-    }
-
-    private static Point[] convertSolution(Node[] solution){
-        ArrayList<Point> list = new ArrayList<>();
-        for (int i = 0; i < solution.length; i++){
-            if (solution[i] == null) {break;}
-            list.add(solution[i].getPoint());
-        }
-        Point[] points = new Point[list.size()];
-        for (int i = 0; i < list.size(); i++){
-            points[i] = list.get(i);
-        }
-        return points;
     }
 }
